@@ -16,7 +16,7 @@
 
 structure_df <- function(data, max_string_length = 60){
   tab <- lapply(data, function(column){
-    if(class(column) == "numeric" | class(column) == "integer"){
+    if(class(column)[1] == "numeric" | class(column) == "integer"){
       unique_values <- summary(column)[1:6]
       zeros <- str_extract(unique_values, "0\\.0+")
       zeros[is.na(zeros)] <- "00"
@@ -26,7 +26,7 @@ structure_df <- function(data, max_string_length = 60){
                         sample_values = sample_values,
                         missing = paste0(round(mean(is.na(column))*100, 2), "%"),
                         stringsAsFactors = F)
-    } else if(class(column) == "factor"){
+    } else if(class(column)[1] == "factor" | class(column)[1] == "ordered"){
       unique_values <- unique(na.omit(column))
       n_unique_values <- length(unique_values)
       sample_values <- paste0(sample(unique_values, size = min(5, n_unique_values), replace = F), collapse = ", ")
@@ -37,7 +37,7 @@ structure_df <- function(data, max_string_length = 60){
                         sample_values = sample_values,
                         missing = paste0(round(mean(is.na(column))*100, 2), "%"),
                         stringsAsFactors = F)
-    } else if(class(column) == "character") {
+    } else if(class(column)[1] == "character") {
       unique_values <- unique(na.omit(column))
       n_unique_values <- length(unique_values)
       sample_values <- paste0(sample(unique_values, size = min(5, n_unique_values), replace = F), collapse = ", ")
@@ -48,7 +48,7 @@ structure_df <- function(data, max_string_length = 60){
                         sample_values = sample_values,
                         missing = paste0(round(mean(is.na(column)), 2)*100, "%"),
                         stringsAsFactors = F)
-    } else if(class(column) == "logical"){
+    } else if(class(column)[1] == "logical"){
       ans <- data.frame(class = "logical",
                         sample_values = paste0("FALSE freq = ", round(sum(column == FALSE, na.rm = T)/length(column),3), ", ",
                                                "TRUE freq = ", round(sum(column == TRUE, na.rm = T)/length(column),3)),
