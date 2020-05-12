@@ -4,16 +4,27 @@
 \alias{merge_small_factor_levels}
 \title{Merge small factor levels.}
 \usage{
-merge_small_factor_levels(x, min.perc = 0.01, case_weights = NULL)
+merge_small_factor_levels(
+  x,
+  min.perc = 0.01,
+  case_weights = NULL,
+  good_levels = T
+)
 }
 \arguments{
-\item{x}{Either character of factor vector}
+\item{x}{either character of factor vector}
+
+\item{min.perc}{minimum frequency of non NA values for a factor level not to be merged}
+
+\item{case_weights}{case weights used in calculation of level frequency}
+
+\item{good_levels}{should syntactically valid levels be required?}
 }
 \value{
-Factor vector, with small levels merged
+factor vector, with small levels merged
 }
 \description{
-Given an input factor/character vector,
+given an input factor/character vector,
   merges together all vector levels that account for
   less than \code{min.perc} of the total number of
   elements in the vector
