@@ -1,27 +1,29 @@
-#' @title data.frame structure in data.frame format
+#' @title data.frame structure summary in data.frame format
 #' @description This function produces output very similar to
 #'   the one obtained by the \code{str} function, only it returns
 #'   a data.frame object which can be used for example in
 #'   rmarkdown reports
 #' @param data A data.frame for which the structure is to be given
 #' @param max_string_length maximum string length in the sample_values column
+#' @param digits maximum number of digits shown for numeric variables
 #' @return A data.frame with the following columns:
-#'   1. variable: vairable name
-#'   2. class: Variable class
-#'   3. sample_values: Sample of the values that variable can take
-#'     for factor variables and main stasitics (mean, median etc) for
-#'     a numeric variable
-#'   4. missing: Percent missing values
+#'   \item{variable}{variable name}
+#'   \item{class}{variable class}
+#'   \item{sample_values}{sample of the values that variable can take
+#'   for factor variables and main stasitics (mean, median etc) for
+#'   a numeric variable}
+#'   \item{missing}{percent missing values}
+#' @example inst/structure_df_example.R
+#' @importFrom stats na.omit
 #' @export
 
-structure_df <- function(data, max_string_length = 60) {
+structure_df <- function(data, max_string_length = 60, digits = 3) {
   tab <- lapply(data, function(column) {
     if (class(column)[1] == "numeric" | class(column) == "integer") {
       unique_values <- summary(column)[1:6]
-      zeros <- str_extract(unique_values, "0\\.0+")
-      zeros[is.na(zeros)] <- "00"
-      zeros <- max(mean(nchar(zeros) - 2), 2)
-      sample_values <- paste0(paste(names(unique_values), round(unname(unique_values), zeros), sep = " = "), collapse = ", ")
+      sample_values <- paste0(paste(names(unique_values),
+                                    round(unname(unique_values), digits),
+                                    sep = " = "), collapse = ", ")
       ans <- data.frame(
         class = class(column),
         sample_values = sample_values,
@@ -49,7 +51,7 @@ structure_df <- function(data, max_string_length = 60) {
         sample_values <- paste0(substr(sample_values, 1, max_string_length - 3), "...")
       }
       ans <- data.frame(
-        class = paste0("char with ", n_unique_values, " unique values"),
+        class = paste0("character with ", n_unique_values, " unique values"),
         sample_values = sample_values,
         missing = paste0(round(mean(is.na(column)), 2) * 100, "%"),
         stringsAsFactors = F
@@ -75,9 +77,8 @@ structure_df <- function(data, max_string_length = 60) {
     }
     return(ans)
   })
-  tab <- bind_rows(tab)
-  tab <- tab %>%
-    mutate(variable = names(data)) %>%
-    select(variable, everything())
+  tab <- do.call(rbind,tab)
+  tab$variable <- names(data)
+  tab <- cbind(tab["variable"], tab[, -which(names(tab) == "variable")])
   return(tab)
 }

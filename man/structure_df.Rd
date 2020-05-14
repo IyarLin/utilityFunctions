@@ -2,27 +2,48 @@
 % Please edit documentation in R/structure_df.R
 \name{structure_df}
 \alias{structure_df}
-\title{data.frame structure in data.frame format}
+\title{data.frame structure summary in data.frame format}
 \usage{
-structure_df(data, max_string_length = 60)
+structure_df(data, max_string_length = 60, digits = 3)
 }
 \arguments{
 \item{data}{A data.frame for which the structure is to be given}
 
 \item{max_string_length}{maximum string length in the sample_values column}
+
+\item{digits}{maximum number of digits shown for numeric variables}
 }
 \value{
 A data.frame with the following columns:
-  1. variable: vairable name
-  2. class: Variable class
-  3. sample_values: Sample of the values that variable can take
-    for factor variables and main stasitics (mean, median etc) for
-    a numeric variable
-  4. missing: Percent missing values
+  \item{variable}{variable name}
+  \item{class}{variable class}
+  \item{sample_values}{sample of the values that variable can take
+  for factor variables and main stasitics (mean, median etc) for
+  a numeric variable}
+  \item{missing}{percent missing values}
 }
 \description{
 This function produces output very similar to
   the one obtained by the \code{str} function, only it returns
   a data.frame object which can be used for example in
   rmarkdown reports
+}
+\examples{
+library(utilityFunctions)
+sample_df <- data.frame(numeric_var = rnorm(1000),
+                        factor_var = factor(sample(LETTERS, 1000, replace = TRUE)),
+                        character_var = sample(letters, 1000, replace = TRUE),
+                        logical_var = rnorm(1000) > 0,
+                        date_var = seq.Date(as.Date("2020-01-01"),
+                                            as.Date("2020-01-01") + 999,
+                                            by = "day"),
+                        stringsAsFactors = F)
+sample_df$numeric_var[sample.int(nrow(sample_df), 150)] <- NA
+
+
+# in the console one can just do:
+str(sample_df)
+
+# if we want to have something close to put in a report we can use:
+structure_df(sample_df)
 }
